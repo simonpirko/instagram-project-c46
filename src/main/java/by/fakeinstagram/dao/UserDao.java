@@ -9,30 +9,30 @@ import java.util.Optional;
 public class UserDao {
 
     public User createUser(User user) {
-        try {
-            Connection connection = DriverManager.getConnection(Constants.SQL_DB, Constants.SQL_DB_USER, Constants.SQL_DB_PASSWORD);
-            connection.setAutoCommit(false);
-            PreparedStatement insertUser = connection.prepareStatement(Constants.INSERT_USER, Statement.RETURN_GENERATED_KEYS);
-            PreparedStatement insertUserDetails = connection.prepareStatement(Constants.INSERT_USER_DETAILS);
+            try (Connection connection = DriverManager.getConnection(Constants.SQL_DB, Constants.SQL_DB_USER, Constants.SQL_DB_PASSWORD)) {
+                connection.setAutoCommit(false);
+                PreparedStatement insertUser = connection.prepareStatement(Constants.INSERT_USER, Statement.RETURN_GENERATED_KEYS);
+                PreparedStatement insertUserDetails = connection.prepareStatement(Constants.INSERT_USER_DETAILS);
 
-            insertUser.setString(1, user.getUserName());
-            insertUser.setString(2, user.getEmail());
-            insertUser.setString(3, user.getPassword());
+                insertUser.setString(1, user.getUserName());
+                insertUser.setString(2, user.getEmail());
+                insertUser.setString(3, user.getPassword());
+                insertUser.executeUpdate();
 
-            fillingUserDetailsFields(user, insertUser, insertUserDetails);
-            insertUserDetails.setLong(6, insertUser.getGeneratedKeys().getLong("id"));
-            insertUserDetails.executeUpdate();
-            user.setId(insertUser.getGeneratedKeys().getLong("id"));
+                insertUserDetails.setString(1, user.getFirstName());
+                insertUserDetails.setString(2, user.getLastName());
+                insertUserDetails.setDate(3, Date.valueOf(user.getBirthDate()));
+                insertUserDetails.setString(4, user.getCountry());
+                insertUserDetails.setString(5, user.getBiography());
+                insertUserDetails.setLong(6, insertUser.getGeneratedKeys().getLong("id"));
+                insertUserDetails.executeUpdate();
 
-            connection.commit();
-            insertUser.close();
-            insertUserDetails.close();
-            connection.close();
-        } catch (SQLException e) {
-            e.printStackTrace();
-            connection.rollback();
-        }
+                user.setId(insertUser.getGeneratedKeys().getLong("id"));
 
+                connection.commit();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         return user;
     }
 
@@ -97,7 +97,7 @@ public class UserDao {
                 updateUser.setString(3, user.getPassword());
                 updateUser.setLong(4, user.getId());
 
-                fillingUserDetailsFields(user, updateUser, updateUserDetails);
+//                fillingUserDetailsFields(user, updateUser, updateUserDetails); //FIXME !
                 updateUserDetails.setLong(6, user.getId());
                 updateUserDetails.executeUpdate();
 
@@ -159,13 +159,7 @@ public class UserDao {
         return Optional.empty();
     }
 
-    private void fillingUserDetailsFields(User user, PreparedStatement userStatement, PreparedStatement userDetailsStatement) throws SQLException {
-        userStatement.executeUpdate();
+    private void fillingUserDetailsFields(User user, PreparedStatement userDetailsStatement) throws SQLException {
 
-        userDetailsStatement.setString(1, user.getFirstName());
-        userDetailsStatement.setString(2, user.getLastName());
-        userDetailsStatement.setDate(3, Date.valueOf(user.getBirthDate()));
-        userDetailsStatement.setString(4, user.getCountry());
-        userDetailsStatement.setString(5, user.getBiography());
     }
 }
