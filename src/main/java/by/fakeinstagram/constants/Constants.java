@@ -3,7 +3,7 @@ package by.fakeinstagram.constants;
 public class Constants {
     public static final String SQL_DB = "jdbc:mysql://localhost:3306/fake_instagram";
     public static final String SQL_DB_USER = "root";
-    public static final String SQL_DB_PASSWORD = "root";
+    public static final String SQL_DB_PASSWORD = "anN1adutko111";
     public static final String SQL_DRIVER = "com.mysql.jdbc.Driver";
 
     public static final String INSERT_USER = "INSERT INTO users (user_name, email, password) VALUES (?, ?, ?)";

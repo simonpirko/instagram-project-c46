@@ -18,7 +18,7 @@ public class SignInServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        req.getRequestDispatcher("/pages/sign-in.jsp").forward(req, resp);
+        getServletContext().getRequestDispatcher("/pages/sign-in.jsp").forward(req, resp);
     }
 
     @Override
@@ -30,10 +30,10 @@ public class SignInServlet extends HttpServlet {
             HttpSession session = req.getSession();
             User user = userService.findUserByEmailAndPassword(email, password).get();
             session.setAttribute("user", user);
-            req.getRequestDispatcher("/pages/main_page.jsp").forward(req, resp);
+            getServletContext().getRequestDispatcher("/pages/userProfile.jsp").forward(req, resp);
         } else {
             req.setAttribute("signInErrorMessage", "Email or password are incorrect.");
-            req.getRequestDispatcher("/pages/sign-in.jsp").forward(req, resp);
+            getServletContext().getRequestDispatcher("/pages/sign-in.jsp").forward(req, resp);
         }
     }
 }

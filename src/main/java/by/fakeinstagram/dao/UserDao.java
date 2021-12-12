@@ -159,22 +159,33 @@ public class UserDao {
         try (Connection connection = DriverManager.getConnection(Constants.SQL_DB, Constants.SQL_DB_USER, Constants.SQL_DB_PASSWORD)) {
             connection.setAutoCommit(false);
             PreparedStatement updateUser = connection.prepareStatement(Constants.UPDATE_USER);
+
+            updateUser.setString(1,user.getUserName());
+            updateUser.setString(2, user.getEmail());
+            updateUser.setString(3, user.getPassword());
+            updateUser.setLong(4, user.getId());
+            updateUser.executeUpdate();
+
+            connection.commit();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void updateUserProfile(User user) {
+        try (Connection connection = DriverManager.getConnection(Constants.SQL_DB, Constants.SQL_DB_USER, Constants.SQL_DB_PASSWORD)) {
+            connection.setAutoCommit(false);
             PreparedStatement updateUserDetails = connection.prepareStatement(Constants.UPDATE_USER_DETAILS);
 
-                updateUser.setString(1, user.getUserName());
-                updateUser.setString(2, user.getEmail());
-                updateUser.setString(3, user.getPassword());
-                updateUser.setLong(4, user.getId());
+            updateUserDetails.setString(1, user.getFirstName());
+            updateUserDetails.setString(2, user.getLastName());
+            updateUserDetails.setDate(3, Date.valueOf(user.getBirthDate()));
+            updateUserDetails.setString(4, user.getCountry());
+            updateUserDetails.setString(5, user.getBiography());
+            updateUserDetails.setLong(6, user.getId());
+            updateUserDetails.executeUpdate();
 
-                updateUserDetails.setString(1, user.getFirstName());
-                updateUserDetails.setString(2, user.getLastName());
-                updateUserDetails.setDate(3, Date.valueOf(user.getBirthDate()));
-                updateUserDetails.setString(4, user.getCountry());
-                updateUserDetails.setString(5, user.getBiography());
-                updateUserDetails.setLong(6, user.getId());
-                updateUserDetails.executeUpdate();
-
-                connection.commit();
+            connection.commit();
         } catch (SQLException e) {
             e.printStackTrace();
         }

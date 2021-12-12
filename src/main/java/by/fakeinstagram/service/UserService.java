@@ -34,6 +34,10 @@ public class UserService {
         userDao.updateUser(user);
     }
 
+    public void updateUserProfile(User user) {
+        userDao.updateUserProfile(user);
+    }
+
     public void deleteUser(long userId) {
         userDao.deleteUser(userId);
     }
