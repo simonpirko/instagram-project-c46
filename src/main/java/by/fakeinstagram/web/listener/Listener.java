@@ -1,4 +1,4 @@
-package by.fakeinstagram.listener;
+package by.fakeinstagram.web.listener;
 
 import by.fakeinstagram.constants.Constants;
 import lombok.SneakyThrows;
