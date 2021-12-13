@@ -7,7 +7,7 @@ import by.fakeinstagram.entity.Like;
 import by.fakeinstagram.entity.Post;
 import by.fakeinstagram.entity.User;
 import by.fakeinstagram.service.PostService;
-import com.mysql.cj.Session;
+
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;

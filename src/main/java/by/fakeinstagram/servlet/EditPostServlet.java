@@ -20,7 +20,7 @@ public class EditPostServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        getServletContext().getRequestDispatcher("/pages/editpost.jsp").forward(req, resp);//или не делать новую страницу а просто добавить кнопку
+        getServletContext().getRequestDispatcher("/pages/editPost.jsp").forward(req, resp);//или не делать новую страницу а просто добавить кнопку
     }
 
     @Override
