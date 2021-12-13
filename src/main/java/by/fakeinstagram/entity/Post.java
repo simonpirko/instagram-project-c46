@@ -16,6 +16,18 @@ public class Post {
     public Post() {
     }
 
+    public Post(String title, String description, LocalDateTime dateOfCreation){
+        this.title = title;
+        this.description = description;
+        this.dateOfCreation = dateOfCreation;
+    }
+
+    public Post(long id, String title, String description, LocalDateTime dateOfCreation){
+        this.id = id;
+        this.title = title;
+        this.description = description;
+        this.dateOfCreation = dateOfCreation;
+    }
     public Post(long id, User user, String title, String description, List<Comment> commentList, Like like, LocalDateTime dateOfCreation) {
         this.id = id;
         this.user = user;

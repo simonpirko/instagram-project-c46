@@ -15,4 +15,11 @@ public class Constants {
 
     public static final String INSERT_USER_DETAILS = "INSERT INTO user_details (first_name, last_name, birth_date, country, biography, user_id) VALUES (?, ?, ?, ?, ?, ?)";
     public static final String UPDATE_USER_DETAILS = "UPDATE user_details SET first_name=?, last_name=?, birth_date=?, country=?, biography=? WHERE user_id=?";
+
+    public static final String INSERT_POST = "INSERT INTO posts (title,description,dateOfCreation,user_id) VALUES (?, ?, ?, ?)";
+    public static final String SELECT_POST_BY_ID = "SELECT * FROM posts WHERE id=?";
+    public static final String SELECT_POST_BY_USERID = "SELECT * FROM posts WHERE user_id=?";
+    public static final String SELECT_ALL_POST = "SELECT * FROM posts";
+    public static final String DELETE_POST = "DELETE FROM posts WHERE id=?";
+    public static final String UPDATE_POST = "UPDATE posts SET title=?, description=? ,dateOfCreation=? WHERE id=?";
 }
