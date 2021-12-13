@@ -14,8 +14,20 @@ public class UserService {
         return Optional.empty();
     }
 
-    public boolean checkUser(User user) {
-        return userDao.checkUser(user);
+    public Optional<User> findUserById(long id) {
+        return userDao.findUserById(id);
+    }
+
+    public Optional<User> findUserByUsername(String username) {
+        return userDao.findUserByUsername(username);
+    }
+
+    public Optional<User> findUserByEmailAndPassword(String email, String password) {
+        return userDao.findUserByEmailAndPassword(email , password);
+    }
+
+    public boolean checkUser(String email, String password) {
+        return userDao.findUserByEmailAndPassword(email, password).isPresent();
     }
 
     public void updateUser(User user) {

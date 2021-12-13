@@ -18,7 +18,11 @@ public class UserDao {
             insertUser.setString(2, user.getEmail());
             insertUser.setString(3, user.getPassword());
             insertUser.executeUpdate();
-
+            ResultSet resultSet = insertUser.getGeneratedKeys();
+            long generatedKey = -1;
+            if (resultSet.next()) {
+                generatedKey = resultSet.getLong(1);
+            }
             insertUserDetails.setString(1, user.getFirstName());
             insertUserDetails.setString(2, user.getLastName());
             insertUserDetails.setDate(3, Date.valueOf(user.getBirthDate()));
@@ -38,11 +42,35 @@ public class UserDao {
 
     public Optional<User> findUserById(long id) {
         try (Connection connection = DriverManager.getConnection(Constants.SQL_DB, Constants.SQL_DB_USER, Constants.SQL_DB_PASSWORD);
-             PreparedStatement selectUserById = connection.prepareStatement(Constants.SELECT_USER_BY_ID)) {
+             PreparedStatement selectUserById = connection.prepareStatement(Constants.SELECT_USER_BY_ID);
+             PreparedStatement selectUserDetailsByUserId = connection.prepareStatement(Constants.SELECT_USER_DETAILS_BY_USER_ID)) {
 
             selectUserById.setLong(1, id);
-            Optional<User> resultSet = getUser(connection, selectUserById);
-            if (resultSet.isPresent()) return resultSet;
+            ResultSet userResultSet = selectUserById.executeQuery();
+
+            if (userResultSet.next()) {
+                long userId = userResultSet.getLong("id");
+                User user = new User(
+                        userId,
+                        userResultSet.getString("user_name"),
+                        userResultSet.getString("email"),
+                        userResultSet.getString("password")
+                );
+                selectUserDetailsByUserId.setLong(1, userId);
+                ResultSet userDetailsResultSet = selectUserDetailsByUserId.executeQuery();
+
+                if (userDetailsResultSet.next()) {
+                    user.setFirstName(userDetailsResultSet.getString("first_name"));
+                    user.setLastName(userDetailsResultSet.getString("last_name"));
+                    user.setBirthDate(userDetailsResultSet.getDate("birth_date").toLocalDate());
+                    user.setCountry(userDetailsResultSet.getString("country"));
+                    user.setBiography(userDetailsResultSet.getString("biography"));
+                    return Optional.of(user);
+                }
+            }
+
+            connection.commit();
+            userResultSet.close();
 
         } catch (SQLException e) {
             e.printStackTrace();
@@ -52,11 +80,35 @@ public class UserDao {
 
     public Optional<User> findUserByUsername(String username) {
         try (Connection connection = DriverManager.getConnection(Constants.SQL_DB, Constants.SQL_DB_USER, Constants.SQL_DB_PASSWORD);
-             PreparedStatement selectUserByUsername = connection.prepareStatement(Constants.SELECT_USER_BY_USERNAME)) {
+             PreparedStatement selectUserByUsername = connection.prepareStatement(Constants.SELECT_USER_BY_USERNAME);
+             PreparedStatement selectUserDetailsByUserId = connection.prepareStatement(Constants.SELECT_USER_DETAILS_BY_USER_ID)) {
 
             selectUserByUsername.setString(1, username);
-            Optional<User> resultSet = getUser(connection, selectUserByUsername);
-            if (resultSet.isPresent()) return resultSet;
+            ResultSet userResultSet = selectUserByUsername.executeQuery();
+
+            if (userResultSet.next()) {
+                long userId = userResultSet.getLong("id");
+                User user = new User(
+                        userId,
+                        userResultSet.getString("user_name"),
+                        userResultSet.getString("email"),
+                        userResultSet.getString("password")
+                );
+                selectUserDetailsByUserId.setLong(1, userId);
+                ResultSet userDetailsResultSet = selectUserDetailsByUserId.executeQuery();
+
+                if (userDetailsResultSet.next()) {
+                    user.setFirstName(userDetailsResultSet.getString("first_name"));
+                    user.setLastName(userDetailsResultSet.getString("last_name"));
+                    user.setBirthDate(userDetailsResultSet.getDate("birth_date").toLocalDate());
+                    user.setCountry(userDetailsResultSet.getString("country"));
+                    user.setBiography(userDetailsResultSet.getString("biography"));
+                    return Optional.of(user);
+                }
+            }
+
+            connection.commit();
+            userResultSet.close();
 
         } catch (SQLException e) {
             e.printStackTrace();
@@ -64,79 +116,81 @@ public class UserDao {
         return Optional.empty();
     }
 
-    public boolean checkUser(User user) {
+    public Optional<User> findUserByEmailAndPassword(String email, String password) {
         try (Connection connection = DriverManager.getConnection(Constants.SQL_DB, Constants.SQL_DB_USER, Constants.SQL_DB_PASSWORD);
-             PreparedStatement selectUserByEmailAndPassword = connection.prepareStatement(Constants.SELECT_USER_BY_EMAIL_AND_PASSWORD)) {
+             PreparedStatement selectUserByEmailAndPassword = connection.prepareStatement(Constants.SELECT_USER_BY_EMAIL_AND_PASSWORD);
+             PreparedStatement selectUserDetailsByUserId = connection.prepareStatement(Constants.SELECT_USER_DETAILS_BY_USER_ID)) {
 
-            selectUserByEmailAndPassword.setString(1, user.getEmail());
-            selectUserByEmailAndPassword.setString(2, user.getPassword());
+            selectUserByEmailAndPassword.setString(1, email);
+            selectUserByEmailAndPassword.setString(2, password);
+            ResultSet userResultSet = selectUserByEmailAndPassword.executeQuery();
 
-            ResultSet resultSet = selectUserByEmailAndPassword.executeQuery();
-            if (resultSet.next()) {
-                return true;
+            if (userResultSet.next()) {
+                long userId = userResultSet.getLong("id");
+                User user = new User(
+                        userId,
+                        userResultSet.getString("user_name"),
+                        userResultSet.getString("email"),
+                        userResultSet.getString("password")
+                );
+                selectUserDetailsByUserId.setLong(1, userId);
+                ResultSet userDetailsResultSet = selectUserDetailsByUserId.executeQuery();
+
+                if (userDetailsResultSet.next()) {
+                    user.setFirstName(userDetailsResultSet.getString("first_name"));
+                    user.setLastName(userDetailsResultSet.getString("last_name"));
+                    user.setBirthDate(userDetailsResultSet.getDate("birth_date").toLocalDate());
+                    user.setCountry(userDetailsResultSet.getString("country"));
+                    user.setBiography(userDetailsResultSet.getString("biography"));
+                    return Optional.of(user);
+                }
             }
 
         } catch (SQLException e) {
             e.printStackTrace();
         }
 
-        return false;
+        return Optional.empty();
     }
 
     public void updateUser(User user) {
-        try {
-            Connection connection = DriverManager.getConnection(Constants.SQL_DB, Constants.SQL_DB_USER, Constants.SQL_DB_PASSWORD);
+        try (Connection connection = DriverManager.getConnection(Constants.SQL_DB, Constants.SQL_DB_USER, Constants.SQL_DB_PASSWORD)) {
             connection.setAutoCommit(false);
             PreparedStatement updateUser = connection.prepareStatement(Constants.UPDATE_USER);
             PreparedStatement updateUserDetails = connection.prepareStatement(Constants.UPDATE_USER_DETAILS);
-
-            try {
 
                 updateUser.setString(1, user.getUserName());
                 updateUser.setString(2, user.getEmail());
                 updateUser.setString(3, user.getPassword());
                 updateUser.setLong(4, user.getId());
 
-//                fillingUserDetailsFields(user, updateUser, updateUserDetails); //FIXME !
+                updateUserDetails.setString(1, user.getFirstName());
+                updateUserDetails.setString(2, user.getLastName());
+                updateUserDetails.setDate(3, Date.valueOf(user.getBirthDate()));
+                updateUserDetails.setString(4, user.getCountry());
+                updateUserDetails.setString(5, user.getBiography());
                 updateUserDetails.setLong(6, user.getId());
                 updateUserDetails.executeUpdate();
 
                 connection.commit();
-            } catch (SQLException e) {
-                connection.rollback();
-                e.printStackTrace();
-            }
-            updateUser.close();
-            updateUserDetails.close();
-            connection.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
     public void deleteUser(long userId) {
-        try {
-            Connection connection = DriverManager.getConnection(Constants.SQL_DB, Constants.SQL_DB_USER, Constants.SQL_DB_PASSWORD);
+        try (Connection connection = DriverManager.getConnection(Constants.SQL_DB, Constants.SQL_DB_USER, Constants.SQL_DB_PASSWORD)){
             connection.setAutoCommit(false);
             PreparedStatement deleteUser = connection.prepareStatement(Constants.DELETE_USER);
-
-            try {
                 deleteUser.setLong(1, userId);
                 deleteUser.executeUpdate();
 
                 connection.commit();
-            } catch (Exception e) {
-                connection.rollback();
-                e.printStackTrace();
-            }
-
-            deleteUser.close();
-            connection.close();
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
-
+  
     private Optional<User> getUser(Connection connection, PreparedStatement statement) throws SQLException {
         ResultSet resultSet = statement.executeQuery();
         if (resultSet.next()) {

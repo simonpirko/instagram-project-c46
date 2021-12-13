@@ -1,4 +1,4 @@
-package by.fakeinstagram.servlet;
+package by.fakeinstagram.web.servlet;
 
 import by.fakeinstagram.entity.User;
 import by.fakeinstagram.service.UserService;
@@ -10,7 +10,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.time.LocalDate;
-import java.util.Optional;
 
 @WebServlet(urlPatterns = "/reg", name = "RegistrationServlet")
 public class RegistrationServlet extends HttpServlet {
@@ -37,8 +36,7 @@ public class RegistrationServlet extends HttpServlet {
         userForRegistration.setCountry(req.getParameter("country"));
         userForRegistration.setBiography(req.getParameter("biography"));
 
-        Optional<User> optUser = userService.createUser(userForRegistration);
-        req.getSession().setAttribute("optUser", optUser);
+        userService.createUser(userForRegistration);
         req.getRequestDispatcher("sign-in.jsp").forward(req, resp);
     }
 }
