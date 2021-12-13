@@ -19,7 +19,14 @@ public class User {
     public User() {
     }
 
-    public User(long id, String firstName, String lastName, LocalDate birthDate, String userName, String email, String password, String country, String biography, List<Post> postList) {
+    public User(long id, String userName, String email, String password) {
+        this.id = id;
+        this.userName = userName;
+        this.email = email;
+        this.password = password;
+    }
+
+    public User(long id, String firstName, String lastName, LocalDate birthDate, String userName, String email, String password, String country, String biography) {
         this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
@@ -29,7 +36,6 @@ public class User {
         this.password = password;
         this.country = country;
         this.biography = biography;
-        this.postList = postList;
     }
 
     public long getId() {
