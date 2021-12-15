@@ -1,13 +1,8 @@
 package by.fakeinstagram.servlet;
 
-
-import by.fakeinstagram.dao.PostDao;
-import by.fakeinstagram.entity.Comment;
-import by.fakeinstagram.entity.Like;
 import by.fakeinstagram.entity.Post;
 import by.fakeinstagram.entity.User;
 import by.fakeinstagram.service.PostService;
-
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -16,7 +11,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.time.LocalDateTime;
-import java.util.List;
 
 //TODO
 @WebServlet(urlPatterns = "/createpost", name = "CreatePostServlet")
@@ -41,6 +35,6 @@ public class CreatePostServlet extends HttpServlet {
         Post post = new Post(title, description, dateOfCreation);
         postService.createPost(user, post);
 
-        getServletContext().getRequestDispatcher("/pages/feed.jsp").forward(req, resp);
+        getServletContext().getRequestDispatcher("/pages/createPost.jsp").forward(req, resp);
     }
 }

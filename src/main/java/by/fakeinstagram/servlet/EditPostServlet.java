@@ -1,8 +1,6 @@
 package by.fakeinstagram.servlet;
-
-import by.fakeinstagram.entity.Like;
 import by.fakeinstagram.entity.Post;
-import by.fakeinstagram.entity.User;
+
 import by.fakeinstagram.service.PostService;
 
 import javax.servlet.ServletException;
@@ -11,7 +9,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.time.LocalDateTime;
 
 @WebServlet(urlPatterns = "/editpost", name = "EditPostServlet")
 public class EditPostServlet extends HttpServlet {
@@ -20,17 +17,18 @@ public class EditPostServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        getServletContext().getRequestDispatcher("/pages/editPost.jsp").forward(req, resp);//или не делать новую страницу а просто добавить кнопку
+        getServletContext().getRequestDispatcher("/pages/editPost.jsp").forward(req, resp);
     }
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        String title = req.getParameter("title");
-        String description = req.getParameter("description");
-        LocalDateTime dateOfCreation = LocalDateTime.now();
-        Post post = new Post(title, description, dateOfCreation);
+        long id = Integer.parseInt(req.getParameter("id"));
+        Post post = postService.getPostById(id).get();
+        post.setTitle(req.getParameter("title"));
+        post.setDescription(req.getParameter("description"));
         postService.updatePost(post);
 
-        getServletContext().getRequestDispatcher("/pages/editPost.jsp").forward(req, resp);
+        //getServletContext().getRequestDispatcher("/pages/feed.jsp").forward(req, resp);
+        resp.sendRedirect("/post");
     }
 }

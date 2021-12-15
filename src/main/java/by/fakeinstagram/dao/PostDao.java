@@ -5,25 +5,23 @@ import by.fakeinstagram.entity.Post;
 import by.fakeinstagram.entity.User;
 
 import java.sql.*;
-import java.sql.Timestamp;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.Date;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
 
 public class PostDao {
-    public Post createPost(User user, Post post) {
-        try (Connection connection = DriverManager.getConnection(Constants.SQL_DB, Constants.SQL_DB_USER, Constants.SQL_DB_PASSWORD);
-             PreparedStatement insertPost = connection.prepareStatement(Constants.INSERT_POST)) {//"INSERT INTO posts (title,description,dateOfCreation,user_id) VALUES (?, ?, ?, ?)";
-            connection.setAutoCommit(false);
+    private final UserDao userDao = new UserDao();
+    private final DateTimeConverter dateTimeConverter = new DateTimeConverter();
+
+    public Post createPost(User user, Post post) {//работает
+        try (Connection connection = DriverManager.getConnection(Constants.SQL_DB, Constants.SQL_DB_USER, Constants.SQL_DB_PASSWORD)) {
+            PreparedStatement insertPost = connection.prepareStatement(Constants.INSERT_POST);
 
             insertPost.setString(1, post.getTitle());
             insertPost.setString(2, post.getDescription());
-            insertPost.setDate(3, (java.sql.Date) convertToDateViaInstant(post.getDateOfCreation()));
+            insertPost.setString(3, dateTimeConverter.localDateTimeToString(LocalDateTime.now()));
             insertPost.setLong(4, user.getId());
-            insertPost.executeUpdate();
+            insertPost.execute();
 
         } catch (SQLException e) {
             e.printStackTrace();
@@ -31,11 +29,10 @@ public class PostDao {
         return post;
     }
 
-    public void deletePost(long postId) {
+    public void deletePost(long postId) {//работает
         try (Connection connection = DriverManager.getConnection(Constants.SQL_DB, Constants.SQL_DB_USER, Constants.SQL_DB_PASSWORD);
              PreparedStatement deletePost = connection.prepareStatement(Constants.DELETE_POST)) { //"DELETE FROM posts WHERE id=?"
             connection.setAutoCommit(false);
-
             try {
                 deletePost.setLong(1, postId);
                 deletePost.executeUpdate();
@@ -57,9 +54,10 @@ public class PostDao {
             if (resultSet.next()) {
                 Post post = new Post(
                         resultSet.getLong("id"),
+                        userDao.findUserById(resultSet.getLong("user_id")).get(),
                         resultSet.getString("title"),
                         resultSet.getString("description"),
-                        resultSet.getTimestamp("dateOfCreation").toLocalDateTime()
+                        dateTimeConverter.stringToLocalDateTime(resultSet.getString("dateOfCreation"))
                 );
                 resultSet.close();
                 return Optional.of(post);
@@ -78,9 +76,10 @@ public class PostDao {
             if (resultSet.next()) {
                 Post post = new Post(
                         resultSet.getLong("id"),
+                        userDao.findUserById(resultSet.getLong("user_id")).get(),
                         resultSet.getString("title"),
                         resultSet.getString("description"),
-                        resultSet.getTimestamp("dateOfCreation").toLocalDateTime()
+                        dateTimeConverter.stringToLocalDateTime(resultSet.getString("dateOfCreation"))
                 );
                 resultSet.close();
                 return Optional.of(post);
@@ -91,40 +90,40 @@ public class PostDao {
         return Optional.empty();
     }
 
-    //скорее в сего тут куча нюансов
+    ////вроде работает
     public List<Post> getAllPosts() {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy, MM, dd HH:mm:ss");
         List<Post> postList = new ArrayList<>();
-        try (Connection connection = DriverManager.getConnection(Constants.SQL_DB, Constants.SQL_DB_USER, Constants.SQL_DB_PASSWORD);
-             PreparedStatement getAllPosts = connection.prepareStatement(Constants.SELECT_ALL_POST)) {
-            ResultSet allPosts = getAllPosts.executeQuery();
-            while (allPosts.next()){
+        try (Connection connection = DriverManager.getConnection(Constants.SQL_DB, Constants.SQL_DB_USER, Constants.SQL_DB_PASSWORD)) {
+            Statement getAllPosts = connection.createStatement();
+
+            ResultSet allPosts = getAllPosts.executeQuery(Constants.SELECT_ALL_POST);
+            while (allPosts.next()) {
                 postList.add(new Post(
                         allPosts.getLong("id"),
+                        userDao.findUserById(allPosts.getLong("user_id")).get(),
                         allPosts.getString("title"),
                         allPosts.getString("description"),
-                        allPosts.getTimestamp("dateOfCreation").toLocalDateTime()
+                        dateTimeConverter.stringToLocalDateTime(allPosts.getString("dateOfCreation"))
                 ));
             }
+            return postList;
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return postList;
+        return null;
     }
-
+    //тоже вроде работает
     public void updatePost(Post post) {
         try (Connection connection = DriverManager.getConnection(Constants.SQL_DB, Constants.SQL_DB_USER, Constants.SQL_DB_PASSWORD);
              PreparedStatement updatePost = connection.prepareStatement(Constants.UPDATE_POST)) {//SET title=?, description=? ,dateOfCreation=? WHERE id=?
             updatePost.setString(1, post.getTitle());
             updatePost.setString(2, post.getDescription());
-            updatePost.setDate(3, (java.sql.Date) convertToDateViaInstant(post.getDateOfCreation()));
+            updatePost.setString(3, dateTimeConverter.localDateTimeToString(post.getDateOfCreation()));
             updatePost.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
-    Date convertToDateViaInstant(LocalDateTime dateToConvert) {
-        return Date.from(dateToConvert.atZone(ZoneId.systemDefault())
-                .toInstant());
-    }
 }

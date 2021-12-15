@@ -7,8 +7,12 @@
 </head>
 <body>
 <p>allPosts</p>
-<c:forEach items="${requestScope.allPosts}" var="postList">
-    <c:out value="${postList.id}${postList.title}${postList.description}${postList.dateOfCreation}${postList.userId}"/>
+<c:forEach var="postList" items="${requestScope.allPosts}" >
+    <div>
+        <a href="/post"><c:out value="${postList.title}"/></a>
+
+        <c:out value="${postList.user.userName}   ${postList.description}    ${postList.dateOfCreation}"/>
+    </div>
 </c:forEach>
 </body>
 </html>
