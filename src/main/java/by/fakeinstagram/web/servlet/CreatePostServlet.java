@@ -1,4 +1,4 @@
-package by.fakeinstagram.servlet;
+package by.fakeinstagram.web.servlet;
 
 import by.fakeinstagram.entity.Post;
 import by.fakeinstagram.entity.User;
@@ -12,7 +12,6 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.time.LocalDateTime;
 
-//TODO
 @WebServlet(urlPatterns = "/createpost", name = "CreatePostServlet")
 public class CreatePostServlet extends HttpServlet {
 
@@ -35,6 +34,6 @@ public class CreatePostServlet extends HttpServlet {
         Post post = new Post(title, description, dateOfCreation);
         postService.createPost(user, post);
 
-        getServletContext().getRequestDispatcher("/pages/createPost.jsp").forward(req, resp);
+        resp.sendRedirect("/feed");
     }
 }

@@ -29,7 +29,7 @@ public class PostDao {
         return post;
     }
 
-    public void deletePost(long postId) {//работает
+    public void deletePost(long postId) {
         try (Connection connection = DriverManager.getConnection(Constants.SQL_DB, Constants.SQL_DB_USER, Constants.SQL_DB_PASSWORD);
              PreparedStatement deletePost = connection.prepareStatement(Constants.DELETE_POST)) { //"DELETE FROM posts WHERE id=?"
             connection.setAutoCommit(false);
@@ -90,7 +90,7 @@ public class PostDao {
         return Optional.empty();
     }
 
-    ////вроде работает
+
     public List<Post> getAllPosts() {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy, MM, dd HH:mm:ss");
         List<Post> postList = new ArrayList<>();
@@ -113,13 +113,13 @@ public class PostDao {
         }
         return null;
     }
-    //тоже вроде работает
+
     public void updatePost(Post post) {
         try (Connection connection = DriverManager.getConnection(Constants.SQL_DB, Constants.SQL_DB_USER, Constants.SQL_DB_PASSWORD);
-             PreparedStatement updatePost = connection.prepareStatement(Constants.UPDATE_POST)) {//SET title=?, description=? ,dateOfCreation=? WHERE id=?
+             PreparedStatement updatePost = connection.prepareStatement(Constants.UPDATE_POST)) {//SET title=?, description=? WHERE id=?
             updatePost.setString(1, post.getTitle());
             updatePost.setString(2, post.getDescription());
-            updatePost.setString(3, dateTimeConverter.localDateTimeToString(post.getDateOfCreation()));
+            updatePost.setLong(3, post.getId());
             updatePost.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();

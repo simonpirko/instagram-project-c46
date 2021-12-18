@@ -5,22 +5,15 @@
     <title>Edit Post</title>
 </head>
 <body>
-<form action="<c:url value="/editpost?id=${param.id}"/>" method="post">
-            <a>New description:<a/>
-            <div>
-            <input type="text" name="title" required>
-            </div>
 
-            <a>New title:<a/>
-            <div>
-                <input type="text" name="description" required>
-            </div>
-
-            <input type="submit" name="submit" value="Submit">
+<form action="/editpost?id=${requestScope.post.id}" method="post">
+    <input name="title" type="text" placeholder="title">
+    <input name="description" type="text" placeholder="description">
+    <button>Edit</button>
 </form>
 
-<div class="ref">
-    <p><a href="<c:url value="/feed"/>">return to feed</a></p>
+<div>
+    <p><a href="/feed">">return to feed</a></p>
 </div>
 </body>
 </html>

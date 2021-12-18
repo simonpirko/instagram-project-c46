@@ -1,4 +1,4 @@
-package by.fakeinstagram.servlet;
+package by.fakeinstagram.web.servlet;
 
 import by.fakeinstagram.service.PostService;
 

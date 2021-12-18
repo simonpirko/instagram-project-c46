@@ -22,5 +22,5 @@ public class Constants {
     public static final String SELECT_POST_BY_USERID = "SELECT * FROM posts WHERE user_id=?";
     public static final String SELECT_ALL_POST = "SELECT * FROM posts";
     public static final String DELETE_POST = "DELETE FROM posts WHERE id=?";
-    public static final String UPDATE_POST = "UPDATE posts SET title=?, description=? ,dateOfCreation=? WHERE id=?";
+    public static final String UPDATE_POST = "UPDATE posts SET title=?, description=? WHERE id=?";
 }

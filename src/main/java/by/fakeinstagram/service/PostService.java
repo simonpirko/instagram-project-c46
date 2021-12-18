@@ -1,7 +1,6 @@
 package by.fakeinstagram.service;
 
 import by.fakeinstagram.dao.PostDao;
-import by.fakeinstagram.dao.UserDao;
 import by.fakeinstagram.entity.Post;
 import by.fakeinstagram.entity.User;
 
