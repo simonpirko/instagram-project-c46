@@ -12,10 +12,13 @@
     </div>
 </form>
 
-<!-- валидация по айди что бы кнопка показывалась только на постах текущего юзера-->
-<a href="/editpost?id=${requestScope.post.id}">edit this post</a>
+<c:if test="${sessionScope.user.id == requestScope.post.user.id}">
+    <a href="/editpost?id=${requestScope.post.id}">edit this post</a>
+</c:if>
 
-<a href="/deletepost?id=${requestScope.post.id}">delete this post</a>
+<c:if test="${sessionScope.user.id == requestScope.post.user.id}">
+    <a href="/deletepost?id=${requestScope.post.id}">delete this post</a>
+</c:if>
 
 <a href="/feed">return to feed</a>
 </body>
