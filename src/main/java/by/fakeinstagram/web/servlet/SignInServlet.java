@@ -30,7 +30,7 @@ public class SignInServlet extends HttpServlet {
             HttpSession session = req.getSession();
             User user = userService.findUserByEmailAndPassword(email, password).get();
             session.setAttribute("user", user);
-            req.getRequestDispatcher("/pages/main_page.jsp").forward(req, resp);
+            resp.sendRedirect("/feed");
         } else {
             req.setAttribute("signInErrorMessage", "Email or password are incorrect.");
             req.getRequestDispatcher("/pages/sign-in.jsp").forward(req, resp);
